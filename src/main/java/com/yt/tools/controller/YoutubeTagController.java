@@ -44,7 +44,7 @@ public class YoutubeTagController {
             return "home";
 
         }
-        return null;
+
     }
 
 }
