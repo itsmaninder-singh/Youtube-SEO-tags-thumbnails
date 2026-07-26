@@ -1,5 +1,6 @@
 package com.yt.tools.Service;
 
+import com.yt.tools.models.Video;
 import com.yt.tools.models.searchVideo;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,6 +31,21 @@ public class Ytservice {
 
     public searchVideo searchVideos(String videoTitle) {
         List<String> videoIds = searchforVideoIds(videoTitle);
+
+        if(videoIds.isEmpty()){
+            return searchVideo.builder()
+                    .primaryVideo(null)
+                    .relatedVideos(Collections.emptyList())
+                    .build();
+        }
+
+        String primaryVideoId = videoIds.get(0);
+
+        List<String> relatedVideosd=videoIds.subList(1,Math.min(videoIds.size(),MaxrelatedVideos));
+
+        Video primaryVideos = getVideoById(primaryVideoId);
+        List<Video> realtedVideos = new ArrayList<>();
+
         return null;
 
 
@@ -44,7 +63,20 @@ public class Ytservice {
                         .queryParam("maxResult",MaxrelatedVideos)
                         .queryParam("key",apikey)
                         .build())
-                .retrieve()
+                .retrieve()// ye api ko data bhejta or response ke liye ready ho jata h
+                .bodyToMono(SearchApiResponse.class)
+                .block(); //ye mono ko wait krwata h or actual data deta h agr nhi likhoge to ek d data nhi milega
+
+        if (response== null || response.items == null){
+            return Collections.emptyList();
+        }
+        List<String> videoIds = new ArrayList<>();
+        for(SearchItem item : response.items){
+            videoIds.add(item.id.videoId);
+
+
+        }
+        return videoIds;
 
 
 
@@ -67,7 +99,7 @@ public class Ytservice {
 
     @Data
     static class VideoApiResponse {
-        List<VideoItem> items;
+        List<videoItem> items;
     }
 
 }
