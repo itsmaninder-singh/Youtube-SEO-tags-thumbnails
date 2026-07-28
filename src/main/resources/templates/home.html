@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT Tag Extractor</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+
+            background:linear-gradient(135deg,#0f172a,#111827,#020617);
+            color:white;
+            min-height:100vh;
+            padding:40px;
+        }
+
+        .container{
+
+            max-width:1200px;
+            margin:auto;
+        }
+
+        h1{
+
+            text-align:center;
+            font-size:42px;
+            margin-bottom:15px;
+        }
+
+        p{
+
+            text-align:center;
+            color:#9ca3af;
+            margin-bottom:40px;
+        }
+
+        .search-box{
+
+            background:#111827;
+            border:1px solid #1f2937;
+            padding:30px;
+            border-radius:18px;
+
+            display:flex;
+            gap:15px;
+            margin-bottom:40px;
+        }
+
+        input{
+
+            flex:1;
+            padding:15px;
+            border:none;
+            border-radius:10px;
+            outline:none;
+            background:#1f2937;
+            color:white;
+            font-size:16px;
+        }
+
+        button{
+
+            padding:15px 30px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            background:#ef4444;
+            color:white;
+            font-size:16px;
+            transition:.3s;
+        }
+
+        button:hover{
+
+            background:#dc2626;
+            transform:translateY(-2px);
+        }
+
+        .error{
+
+            background:#7f1d1d;
+            padding:15px;
+            border-radius:10px;
+            margin-bottom:20px;
+            text-align:center;
+        }
+
+        .card{
+
+            background:#111827;
+            border-radius:18px;
+            padding:25px;
+            margin-bottom:30px;
+            border:1px solid #1f2937;
+        }
+
+        .card h2{
+
+            color:#f87171;
+            margin-bottom:15px;
+        }
+
+        .title{
+
+            font-size:22px;
+            margin-bottom:10px;
+        }
+
+        .channel{
+
+            color:#94a3b8;
+            margin-bottom:15px;
+        }
+
+        .tags{
+
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .tag{
+
+            background:#2563eb;
+            padding:8px 14px;
+            border-radius:20px;
+            font-size:14px;
+        }
+
+        .grid{
+
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:20px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🎥 YouTube Tag Extractor</h1>
+
+    <p>Search any YouTube video and view its tags instantly.</p>
+
+    <form class="search-box"
+          th:action="@{/youtube/search}"
+          method="post">
+
+        <input
+                type="text"
+                name="videoTitle"
+                placeholder="Enter YouTube Video Title...">
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+    <!-- Primary Video -->
+
+    <div class="card"
+         th:if="${primaryVideo!=null}">
+
+        <h2>Primary Video</h2>
+
+        <div class="title"
+             th:text="${primaryVideo.title}">
+        </div>
+
+        <div class="channel"
+             th:text="${primaryVideo.channelTitle}">
+        </div>
+
+        <div class="tags">
+
+            <span class="tag"
+                  th:each="tag : ${primaryVideo.tags}"
+                  th:text="${tag}">
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- Related Videos -->
+
+    <div
+            th:if="${relatedVideos!=null}">
+
+        <h2 style="margin-bottom:20px;">
+            Related Videos
+        </h2>
+
+        <div class="grid">
+
+            <div class="card"
+                 th:each="video : ${relatedVideos}">
+
+                <div class="title"
+                     th:text="${video.title}">
+                </div>
+
+                <div class="channel"
+                     th:text="${video.channelTitle}">
+                </div>
+
+                <div class="tags">
+
+                    <span
+                            class="tag"
+                            th:each="tag : ${video.tags}"
+                            th:text="${tag}">
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

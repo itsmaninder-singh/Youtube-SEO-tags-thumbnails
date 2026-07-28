@@ -11,11 +11,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Video {
+public class SearchVideo {
 
-    private String id;
-    private String channelTitle;
-    private String title;
-    private List<String> tags;
+    private Video primaryVideo;
+    private List<Video> relatedVideos;
 
 }
