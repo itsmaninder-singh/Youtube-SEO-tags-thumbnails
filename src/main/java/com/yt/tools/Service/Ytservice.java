@@ -2,6 +2,7 @@ package com.yt.tools.Service;
 
 import com.yt.tools.models.SearchVideo;
 import com.yt.tools.models.Video;
+import com.yt.tools.models.VideoDetails;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,6 +90,36 @@ public class Ytservice {
                 .title(snippet.title)
                 .channelTitle(snippet.channelTitle)
                 .tags(snippet.tags)
+                .build();
+    }
+
+    public VideoDetails getVideoDetails(String videoId){
+        VideoApiResponse response = webClientBuilder
+                .baseUrl(baseUrl)
+                .build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/videos")
+                        .queryParam("part", "snippet")
+                        .queryParam("id", videoId)
+                        .queryParam("key", apiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(VideoApiResponse.class)
+                .block();
+
+        if (response == null || response.items == null || response.items.isEmpty()) {
+            return null;
+        }
+        Snippet snippet = response.items.get(0).snippet;
+        String thumbnailUrl = snippet.thumbnails.getBestThumbnailUrl();
+
+        return VideoDetails.builder()
+                .id(videoId)
+                .title(snippet.title)
+                .tags(snippet.tags==null?Collections.emptyList(): snippet.tags)
+                .thumbnailUrl(thumbnailUrl)
+                .channeltitle(snippet.channelTitle)
                 .build();
     }
 
